@@ -1,0 +1,23 @@
+{
+  "name": "todoappbootstrap",
+  "version": "1.0.0",
+  "description": "Todo App Bootstrap",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "bootstrap": "^4.0.0-beta",
+    "express": "^4.15.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Nagarro",
+    "Bootstrap",
+    "Webdev"
+  ],
+  "author": "Avikal Kohli",
+  "license": "ISC"
+}
