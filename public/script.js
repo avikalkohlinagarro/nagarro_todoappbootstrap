@@ -38,6 +38,10 @@ function getToDoElements(todosDataJSON) {
 }
 
 function getParticularToDoElements(todosDataJSON,todoStatus) {
+    var parent = document.getElementById(TODOLIST_ALL[todoStatus]);
+    while (parent.hasChildNodes()) {
+        parent.removeChild(parent.firstChild);
+    }
     var todosDataObject = JSON.parse(todosDataJSON);
     Object.keys(todosDataObject).forEach(function (index) {
         if (todosDataObject[index].status == todoStatus) {
@@ -68,7 +72,7 @@ function createTodoElement(index,todoObject) {
         var deleteButton = document.createElement("button");
         deleteButton.setAttribute("type","button");
         deleteButton.setAttribute("class","close");
-        deleteButton.setAttribute("onclick","deleteTodoAjax("+index+")");
+        deleteButton.setAttribute("onclick","deleteTodoAjax("+index+",\"ACTIVE\")");
         deleteButton.innerText = "x";
         completeCheckbox.appendChild(deleteButton);
         todoElement.appendChild(completeCheckbox);
@@ -91,7 +95,7 @@ function createTodoElement(index,todoObject) {
         var deleteButton = document.createElement("button");
         deleteButton.setAttribute("type","button");
         deleteButton.setAttribute("class","close");
-        deleteButton.setAttribute("onclick","deleteTodoAjax("+index+")");
+        deleteButton.setAttribute("onclick","deleteTodoAjax("+index+",\"COMPLTE\")");
         deleteButton.innerText = "x";
         completeCheckbox.appendChild(deleteButton);
         todoElement.appendChild(completeCheckbox);
@@ -118,7 +122,8 @@ function addTodosAjax() {
         if (xhr.readyState == RESPONSE_DONE){
             if (xhr.status == STATUS_OK){
                 // addToDoElements(TODOSLIST_ACTIVE,xhr.responseText);
-                getToDoElements(xhr.responseText);
+                // getToDoElements(xhr.responseText);
+                getParticularToDoElements(xhr.responseText,"ACTIVE");
             }
             else {
                 console.log(xhr.responseText);
@@ -139,7 +144,9 @@ function activeTodoAjax(id) {
         if (xhr.readyState == RESPONSE_DONE){
             if (xhr.status == STATUS_OK){
                 // addToDoElements(TODOSLIST_COMPLETED,xhr.responseText);
-                getToDoElements(xhr.responseText);
+                // getToDoElements(xhr.responseText);
+                getParticularToDoElements(xhr.responseText,"ACTIVE");
+                getParticularToDoElements(xhr.responseText,"COMPLETE");
             }
             else {
                 console.log(xhr.responseText);
@@ -161,7 +168,12 @@ function completeTodoAjax(id) {
         if (xhr.readyState == RESPONSE_DONE){
             if (xhr.status == STATUS_OK){
                 // addToDoElements(TODOSLIST_COMPLETED,xhr.responseText);
-                getToDoElements(xhr.responseText);
+                // getToDoElements(xhr.responseText);
+                getParticularToDoElements(xhr.responseText,"ACTIVE");
+                // getParticularToDoElements(xhr.responseText,"COMPLETE");
+                if (document.getElementById("toggleCompleted").value == "Hide Completed Todos") {
+                    getParticularToDoElements(xhr.responseText,"COMPLETE");
+                }
             }
             else {
                 console.log(xhr.responseText);
@@ -172,7 +184,8 @@ function completeTodoAjax(id) {
     // xhr.send(data);
 }
 
-function deleteTodoAjax(id) {
+function deleteTodoAjax(id,todoStatus) {
+    console.log("Check");
     var xhr = new XMLHttpRequest();
     xhr.open("PUT","/api/todos/delete/"+id, true);
 
@@ -183,7 +196,14 @@ function deleteTodoAjax(id) {
         if (xhr.readyState == RESPONSE_DONE){
             if (xhr.status == STATUS_OK){
                 // addToDoElements(TODOSLIST_DELETED,xhr.responseText);
-                getToDoElements(xhr.responseText);
+                getParticularToDoElements(xhr.responseText,"ACTIVE");
+                if (document.getElementById("toggleCompleted").value == "Hide Completed Todos" && todoStatus=="COMPLETE") {
+                    getParticularToDoElements(xhr.responseText,"COMPLETE");
+                }
+                if (document.getElementById("toggleDeleted").value == "Hide Deleted Todos") {
+                    getParticularToDoElements(xhr.responseText,"DELETED");
+                }
+                // getToDoElements(xhr.responseText);
             }
             else {
                 console.log(xhr.responseText);
@@ -241,6 +261,7 @@ function toggleDeletedTodosAjax() {
 }
 
 function handleKeyPress(event) {
+    console.log(event);
     if (event.keyCode == 13) {
         event.preventDefault();
         addTodosAjax();
